@@ -36,6 +36,10 @@ def change_dir(request):
 
 Plugins = ["serial"]
 #Plugins = ["serial", "mp", "cf", "dask"]
+<<<<<<< HEAD
+=======
+
+>>>>>>> combiner
 
 @to_task
 def fun_addtwo(a):
