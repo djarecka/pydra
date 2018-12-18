@@ -186,7 +186,8 @@ class NodeBase(object):
 
             # TODO NOW musze tu jakis sensowniejszy order zrobic
             #tu chyba ogolnie poiwnno sie sprawdzac czy nie zostal jakis combiner sprawdzic kombinacje
-            if ind_inner is None or not from_node.state._inner_splitter_comb:
+            # if the from_node doesn't have any inner splitters that are left (not combined)
+            if not from_node.state._inner_splitter_comb:
                 #pdb.set_trace()
                 if from_node.state.combiner:
                     #pdb.set_trace()
@@ -196,7 +197,7 @@ class NodeBase(object):
                     # TODO!! should i use state_inner_input?
                     dir_nm_el_from, _ = from_node._directory_name_state_surv(state_dict)
                     # TODO: do I need this if, what if this is wf?
-                    if not from_node.state._inner_splitter_comb and ind_inner is not None: pdb.set_trace()
+                    if not from_node.state._inner_splitter_comb and ind_inner is not None and not self.state._inner_splitter: pdb.set_trace()
                     if is_node(from_node):
                         out_from = getattr(from_node.results_dict[dir_nm_el_from].output, from_socket)
                         if out_from:
