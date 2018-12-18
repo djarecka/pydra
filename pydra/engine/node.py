@@ -478,8 +478,9 @@ class Node(NodeBase):
                     state_dict = self.state.state_values(ind)
                 else:
                     state_dict = self.state.state_ind(ind)
+                # TODO: this part will not work for multiple different inner splitters
                 if self.state._inner_splitter:
-                    # TODO changes probably needed when self.write_state=Fals
+                    # TODO changes needed when self.write_state=Fals
                     inner_size = self.wf_inner_splitters_size[self.state._inner_splitter[0]][ind]
                     for ind_inner in range(inner_size):
                         state_dict, inputs_dict = self.get_input_el(ind, ind_inner=ind_inner)
