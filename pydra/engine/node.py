@@ -183,14 +183,20 @@ class NodeBase(object):
         for (from_node, from_socket, to_socket) in self.needed_outputs:
             # if the previous node has combiner I have to collect all elements
             # ktory tu combiner powinien byc (powinno sie wykluczac z pierwszym if)
+
+            # TODO NOW musze tu jakis sensowniejszy order zrobic
+            #tu chyba ogolnie poiwnno sie sprawdzac czy nie zostal jakis combiner sprawdzic kombinacje
             if ind_inner is None or not from_node.state._inner_splitter_comb:
+                #pdb.set_trace()
                 if from_node.state.combiner:
+                    #pdb.set_trace()
                     inputs_dict["{}.{}".format(self.name, to_socket)] =\
                         self._get_input_comb(from_node, from_socket, state_dict)
                 else:
                     # TODO!! should i use state_inner_input?
                     dir_nm_el_from, _ = from_node._directory_name_state_surv(state_dict)
                     # TODO: do I need this if, what if this is wf?
+                    if not from_node.state._inner_splitter_comb and ind_inner is not None: pdb.set_trace()
                     if is_node(from_node):
                         out_from = getattr(from_node.results_dict[dir_nm_el_from].output, from_socket)
                         if out_from:
@@ -201,6 +207,7 @@ class NodeBase(object):
             # if from node has some inner splitters that were not combined
             if ind_inner is not None:
                 if from_node.state._inner_splitter_comb:
+                    #pdb.set_trace()
                     for inner_nm in from_node.state._inner_splitter_comb:
                         # TODO: should I use to state_init?
                         state_dict[inner_nm] = from_node.inner_states[inner_nm][ind][ind_inner]
@@ -210,11 +217,15 @@ class NodeBase(object):
                             inputs_dict["{}.{}".format(self.name, to_socket)] = out_from
                         else:
                             raise Exception("output from {} doesnt exist".format(from_node))
-                elif self.state._inner_splitter:
+                elif self.state._inner_splitter:# and not from_node.state._inner_splitter_comb:
+                    #pdb.set_trace()
                     inner_nm = "{}.{}".format(self.name, to_socket)
                     if inner_nm in self.state._inner_splitter:
                         state_dict[inner_nm] = inputs_dict[inner_nm][ind_inner]
                         inputs_dict[inner_nm] = inputs_dict[inner_nm][ind_inner]
+                else:
+                    pdb.set_trace()
+                    pass
 
                 inner_nm = "{}.{}".format(self.name, to_socket)
                 if inner_nm in self.state._inner_splitter:
