@@ -156,7 +156,6 @@ class Submitter(object):
         _to_remove = []
         for (to_node, i, ind) in self.node_line:
             if hasattr(to_node, 'interface'):
-                print("_NODES_CHECK INPUT", to_node.name, to_node.checking_input_el(ind))
                 #if to_node.name == "NC": pdb.set_trace()
                 if to_node.state._inner_splitter:
                     print("_NODES_CHECK INPUT (ind_inner=0)", to_node.name,
@@ -179,6 +178,7 @@ class Submitter(object):
                             self._submit_node_el(to_node, i, ind, ind_inner=i_inner)
                         _to_remove.append((to_node, i, ind))
                 else:
+                    print("_NODES_CHECK INPUT", to_node.name, to_node.checking_input_el(ind))
                     if to_node.checking_input_el(ind, ind_inner=None):
                         self._submit_node_el(to_node, i, ind, ind_inner=None)
                         _to_remove.append((to_node, i, ind))
