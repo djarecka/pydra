@@ -6,7 +6,7 @@ from ..core import TaskBase
 from ..submitter import Submitter
 from ..task import to_task
 
-Plugins = ["serial", "cf"]
+Plugins = ["cf"]
 
 
 @pytest.fixture(scope="module")

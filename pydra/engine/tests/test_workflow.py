@@ -6,7 +6,7 @@ from ..task import to_task
 from ..core import Workflow
 
 
-Plugins = ["serial", "cf"]
+Plugins = ["cf"]
 
 
 @to_task
