@@ -1,18 +1,14 @@
 """Basic compute graph elements"""
 import abc
-from collections import OrderedDict
 import dataclasses as dc
-import itertools
 import json
 import logging
 import networkx as nx
 import os
-import pdb
 from pathlib import Path
 import typing as ty
 import pickle as pk
-from copy import deepcopy, copy
-from time import sleep
+from copy import deepcopy
 
 import cloudpickle as cp
 from filelock import FileLock
@@ -31,10 +27,10 @@ from .helpers import (
     save_result,
     ensure_list,
     record_error,
-    get_inputs,
 )
 from ..utils.messenger import send_message, make_message, gen_uuid, now, AuditFlag
 
+logging.basicConfig(level=logging.DEBUG)  # TODO: RF
 logger = logging.getLogger("pydra")
 
 develop = True
@@ -125,6 +121,9 @@ class TaskBase:
         # dictionary of results from tasks
         self.results_dict = {}
         self.plugin = None
+
+    def __repr__(self):
+        return self.name
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -244,7 +243,7 @@ class TaskBase:
     def __call__(self, **kwargs):
         return self.run(**kwargs)
 
-    def run(self, **kwargs):
+    def run(self, return_self=False, **kwargs):
         self.inputs = dc.replace(self.inputs, **kwargs)
         checksum = self.checksum
         lockfile = self.cache_dir / (checksum + ".lock")
@@ -260,6 +259,7 @@ class TaskBase:
         """
         # TODO add signal handler for processes killed after lock acquisition
         with FileLock(lockfile):
+            logger.debug("Starting %s.run", self)
             # Let only one equivalent process run
             # Eagerly retrieve cached
             if self.results_dict:  # should be skipped if run called without submitter
@@ -346,6 +346,9 @@ class TaskBase:
                         {"@id": aid, "endedAtTime": now(), "errored": result.errored},
                         AuditFlag.PROV,
                     )
+            logger.debug("Completed %s.run", self)
+            if return_self:
+                return self
             return result
 
     # TODO: Decide if the following two functions should be separated
@@ -422,8 +425,11 @@ class TaskBase:
     # checking if all outputs are saved
     @property
     def done(self):
-        if self.results_dict:
-            return all([future.done() for _, (future, _) in self.results_dict.items()])
+        # if self.results_dict:
+        #     return all([future.done() for _, (future, _) in self.results_dict.items()])
+        if self.result():
+            return True
+        return False
 
     def _combined_output(self):
         combined_results = []
@@ -526,8 +532,16 @@ class Workflow(TaskBase):
         return self.__getattribute__(name)
 
     @property
+    def done(self):
+        for task in self.graph:
+            if not task.done:
+                logger.debug("Not done: %s", task)
+                return False
+        return True
+
+    @property
     def nodes(self):
-        return self._nodes
+        return self.name2obj.values()
 
     @property
     def graph_sorted(self):
@@ -545,6 +559,7 @@ class Workflow(TaskBase):
             if isinstance(val, LazyField):
                 # adding an edge to the graph if task id expecting output from a different task
                 if val.name != self.name:
+                    logger.debug("Connecting %s to %s", val.name, task.name)
                     self.graph.add_edge(
                         getattr(self, val.name),
                         task,
@@ -563,30 +578,24 @@ class Workflow(TaskBase):
             else:
                 task.state = state.State(task.name, other_states=other_states)
         self.node_names.append(task.name)
+        logger.debug("Added %s", task)
         return self
 
     def _run_task(self):
-        for task in self.graph_sorted:
-            # depend on prior tasks that have state
-            task.inputs.retrieve_values(self)
-            if task.state and not hasattr(task.state, "states_ind"):
-                task.state.prepare_states(inputs=task.inputs)
-            if task.state and not hasattr(task.state, "inputs_ind"):
-                task.state.prepare_inputs()
-            if self.plugin is None:
-                task.run()
-            else:
-                from .submitter import Submitter
+        # avoid cyclic imports
+        from .submitter import Submitter
 
-                with Submitter(self.plugin) as sub:
-                    sub.run(task)
-                while not task.done:
-                    sleep(1)
+        # should be empty
+        plugin = self.plugin or "cf"  # TODO: default to serial
+        with Submitter(plugin) as sub:
+            # hand off graph expansion to submitter
+            sub.run(self)
 
     def set_output(self, connections):
         self._connections = connections
         fields = [(name, ty.Any) for name, _ in connections]
         self.output_spec = SpecInfo(name="Output", fields=fields, bases=(BaseSpec,))
+        logger.info("Added %s to %s", self.output_spec, self)
 
     def _list_outputs(self):
         output = []
@@ -608,3 +617,14 @@ def is_task(obj):
 
 def is_workflow(obj):
     return isinstance(obj, Workflow)
+
+
+def is_runnable(graph, obj):
+    """Check if a task within a graph is runnable"""
+    if (not is_task(obj)) or not hasattr(graph, "predecessors"):
+        return False
+    if graph.predecessors(obj):
+        for pred in graph.predecessors(obj):
+            if not pred.done:
+                return False
+    return True
