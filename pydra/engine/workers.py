@@ -1,5 +1,7 @@
-import os, time, pdb
+import time
 import multiprocessing as mp
+import asyncio
+from functools import partial
 
 # from pycon_utils import make_cluster
 from dask.distributed import Client
@@ -7,13 +9,12 @@ import concurrent.futures as cf
 
 import logging
 
-logger = logging.getLogger("nipype.workflow")
+logger = logging.getLogger("pydra.worker")
 
 
 class Worker(object):
     def __init__(self):
         logger.debug("Initialize Worker")
-        pass
 
     def run_el(self, interface, **kwargs):
         raise NotImplementedError
@@ -66,22 +67,50 @@ class SerialWorker(Worker):
 
 
 class ConcurrentFuturesWorker(Worker):
-    def __init__(self, nr_proc=4):
-        self.nr_proc = nr_proc
+    def __init__(self, nr_proc=2, loop=None):
+        super(ConcurrentFuturesWorker, self).__init__()
+        self.nr_proc = nr_proc or mp.cpu_count()
+        # added cpu_count to verify, remove once confident and let PPE handle
         self.pool = cf.ProcessPoolExecutor(self.nr_proc)
+        self.loop = loop or asyncio.get_event_loop()
+        # self.loop = asyncio.get_event_loop()
         logger.debug("Initialize ConcurrentFuture")
 
-    def run_el(self, interface, **kwargs):
-        return self.pool.submit(interface, **kwargs)
+    def run_el(self, interface, sidx=None, **kwargs):
+        # wrap as asyncio task
+        task = asyncio.create_task(exec_as_coro(self.loop, self.pool, interface, sidx))
+        return task
 
     def close(self):
         self.pool.shutdown()
 
+    async def fetch_finished(self, futures):
+        """Awaits asyncio ``Tasks`` until one is finished
+
+        Parameters
+        ----------
+        futures : set of ``Futures``
+            Pending tasks
+
+        Returns
+        -------
+        done : set
+            Finished or cancelled tasks
+        """
+        done = set()
+        try:
+            done, pending = await asyncio.wait(
+                futures, return_when=asyncio.FIRST_COMPLETED
+            )
+        except ValueError:
+            # nothing pending!
+            pending = set()
+        logger.debug(f"Tasks finished: {len(done)}")
+        return done, pending
+
 
 class DaskWorker(Worker):
     def __init__(self):
-        from distributed.deploy.local import LocalCluster
-
         logger.debug("Initialize Dask Worker")
         # self.cluster = LocalCluster()
         self.client = Client()  # self.cluster)
@@ -102,3 +131,11 @@ class DaskWorker(Worker):
     def close(self):
         # self.cluster.close()
         self.client.close()
+
+
+async def exec_as_coro(loop, pool, interface, sidx=None):
+    logger.debug(
+        f'Executing runnable {interface}{str(sidx) if sidx is not None else ""}'
+    )
+    res = await loop.run_in_executor(pool, interface)
+    return (interface, res, sidx)
