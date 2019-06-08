@@ -1,5 +1,4 @@
-import pytest, pdb
-from time import sleep
+import pytest
 import shutil
 
 from ..submitter import Submitter
@@ -7,7 +6,7 @@ from ..task import to_task
 from ..core import Workflow
 
 
-Plugins = ["serial", "cf"]
+Plugins = ["cf"]
 
 
 @to_task
@@ -35,11 +34,8 @@ def test_wf_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert 4 == results.output.out
 
@@ -56,11 +52,8 @@ def test_wf_2(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert 8 == results.output.out
 
@@ -81,11 +74,8 @@ def test_wf_2a(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert 8 == results.output.out
 
@@ -111,11 +101,8 @@ def test_wf_2b(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert 8 == results.output.out
 
@@ -132,11 +119,8 @@ def test_wf_st_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [({"test7.x": 1}, 3), ({"test7.x": 2}, 4)]
     assert results[0].output.out == 3
@@ -153,11 +137,8 @@ def test_wf_ndst_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [({"test7.x": 1}, 3), ({"test7.x": 2}, 4)]
     assert results.output.out == [3, 4]
@@ -175,11 +156,8 @@ def test_wf_st_2(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [[({"test7.x": 1}, 3), ({"test7.x": 2}, 4)]]
     assert results[0][0].output.out == 3
@@ -196,11 +174,8 @@ def test_wf_ndst_2(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [[({"test7.x": 1}, 3), ({"test7.x": 2}, 4)]]
     assert results.output.out[0] == [3, 4]
@@ -222,11 +197,8 @@ def test_wf_st_3(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [({"test7.x": 1, "test7.y": 11}, 13), ({"test7.x": 2, "test.y": 12}, 26)]
     assert results[0].output.out == 13
@@ -245,11 +217,8 @@ def test_wf_ndst_3(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [({"test7.x": 1, "test7.y": 11}, 13), ({"test7.x": 2, "test.y": 12}, 26)]
     assert results.output.out == [13, 26]
@@ -268,11 +237,8 @@ def test_wf_st_4(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [
     #     [({"test7.x": 1, "test7.y": 11}, 13), ({"test7.x": 2, "test.y": 12}, 26)]
@@ -293,11 +259,8 @@ def test_wf_ndst_4(plugin):
     wf.inputs.a = [1, 2]
     wf.inputs.b = [11, 12]
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     # expected: [
     #     [({"test7.x": 1, "test7.y": 11}, 13), ({"test7.x": 2, "test.y": 12}, 26)]
@@ -318,11 +281,8 @@ def test_wf_st_5(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert results[0][0].output.out == 13
@@ -343,11 +303,8 @@ def test_wf_ndst_5(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert results.output.out[0] == [13, 24]
@@ -372,11 +329,8 @@ def test_wf_st_6(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results) == 6
@@ -401,11 +355,8 @@ def test_wf_ndst_6(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results.output.out) == 6
@@ -427,11 +378,8 @@ def test_wf_st_7(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results) == 2
@@ -463,11 +411,8 @@ def test_wf_ndst_7(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results.output.out) == 2
@@ -490,11 +435,8 @@ def test_wf_st_8(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results) == 3
@@ -526,11 +468,8 @@ def test_wf_ndst_8(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results.output.out) == 3
@@ -554,11 +493,8 @@ def test_wf_st_9(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results) == 1
@@ -590,11 +526,8 @@ def test_wf_ndst_9(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
 
     assert len(results.output.out) == 1
@@ -620,11 +553,8 @@ def test_wfasnd_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results.output.out == 4
 
@@ -646,11 +576,8 @@ def test_wfasnd_wfinp_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results.output.out == 4
 
@@ -673,11 +600,8 @@ def test_wfasnd_st_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results.output.out == [4, 6]
 
@@ -701,11 +625,8 @@ def test_wfasnd_ndst_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results.output.out == [4, 6]
 
@@ -728,11 +649,8 @@ def test_wfasnd_wfst_1(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results[0].output.out == 4
     assert results[1].output.out == 6
@@ -761,11 +679,8 @@ def test_wfasnd_st_2(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results.output.out == [4, 42]
 
@@ -790,11 +705,8 @@ def test_wfasnd_wfst_2(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results[0].output.out == 4
     assert results[1].output.out == 42
@@ -823,11 +735,8 @@ def test_wfasnd_ndst_3(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results.output.out == [4, 42]
 
@@ -853,11 +762,8 @@ def test_wfasnd_wfst_3(plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert results[0].output.out == 4
     assert results[1].output.out == 42
@@ -880,11 +786,8 @@ def test_wf_nostate_cachedir(plugin, tmpdir):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert 8 == results.output.out
 
@@ -906,11 +809,8 @@ def test_wf_nostate_cachedir_relativepath(tmpdir, plugin):
     wf.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf)
+        sub(wf)
 
-    # checking the results
-    while not wf.done:
-        sleep(1)
     results = wf.result()
     assert 8 == results.output.out
 
@@ -935,10 +835,7 @@ def test_wf_nostate_cachelocations(plugin, tmpdir):
     wf1.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf1)
-
-    while not wf1.done:
-        sleep(1)
+        sub(wf1)
 
     results1 = wf1.result()
     assert 8 == results1.output.out
@@ -957,10 +854,7 @@ def test_wf_nostate_cachelocations(plugin, tmpdir):
     wf2.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf2)
-
-    while not wf2.done:
-        sleep(1)
+        sub(wf2)
 
     results2 = wf2.result()
     assert 8 == results2.output.out
@@ -988,10 +882,7 @@ def test_wf_nostate_cachelocations_recompute(plugin, tmpdir):
     wf1.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf1)
-
-    while not wf1.done:
-        sleep(1)
+        sub(wf1)
 
     results1 = wf1.result()
     assert 8 == results1.output.out
@@ -1011,10 +902,7 @@ def test_wf_nostate_cachelocations_recompute(plugin, tmpdir):
     wf2.plugin = plugin
 
     with Submitter(plugin=plugin) as sub:
-        sub.run(wf2)
-
-    while not wf2.done:
-        sleep(1)
+        sub(wf2)
 
     results2 = wf2.result()
     assert 8 == results2.output.out
