@@ -337,6 +337,7 @@ class TaskBase:
                             },
                             AuditFlag.PROV,
                         )
+                print("SAVE_RESULT", odir, result.output.out)
                 save_result(odir, result)
                 with open(odir / "_node.pklz", "wb") as fp:
                     cp.dump(self, fp)
@@ -358,6 +359,10 @@ class TaskBase:
         run_output = ensure_list(self._list_outputs())
         output_klass = make_klass(self.output_spec)
         output = output_klass(**{f.name: None for f in dc.fields(output_klass)})
+        print(
+            "OUT IN _COLLECT",
+            dc.replace(output, **dict(zip(self.output_names, run_output))),
+        )
         return dc.replace(output, **dict(zip(self.output_names, run_output)))
 
     # TODO: should change state!
@@ -476,6 +481,7 @@ class TaskBase:
             else:
                 checksum = self.checksum
             result = load_result(checksum, self.cache_locations)
+            print("RESULTS after LOADING", result)
             return result
 
 
@@ -647,6 +653,7 @@ class Workflow(TaskBase):
                         )
                 await self._run_task(submitter)
                 result.output = self._collect_outputs()
+                print("AFTER AWAIT", result.output)
             except Exception as e:
                 record_error(self.output_dir, e)
                 result.errored = True
@@ -710,6 +717,7 @@ class Workflow(TaskBase):
             if not isinstance(val, LazyField):
                 raise ValueError("all connections must be lazy")
             output.append(val.get_value(self))
+        print("\n LIST OUT", self.name, self._connections, output)
         return output
 
     def submit_async(self, submitter):

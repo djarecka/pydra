@@ -173,27 +173,78 @@ class LazyField:
 
     def get_value(self, wf, state_index=None):
         if self.attr_type == "input":
-            return getattr(wf.inputs, self.field)
+            final_inp = getattr(wf.inputs, self.field)
+            print("\n GET VAL INP", final_inp)
+            return final_inp
         elif self.attr_type == "output":
             node = getattr(wf, self.name)
-            for i in [0, 1]:
-                result = node.result(state_index=state_index)
-                if isinstance(result, list):
-                    if isinstance(result[0], list):
-                        results_new = []
-                        for res_l in result:
-                            try:
-                                res_l_new = [
-                                    getattr(res.output, self.field) for res in res_l
-                                ]
-                            except:
-                                if i == 0:
-                                    pass
-                                else:
-                                    raise
-                            results_new.append(res_l_new)
-                        return results_new
-                    else:
-                        return [getattr(res.output, self.field) for res in result]
+            # result = node.result(state_index=state_index)
+            self._tmp_cnt = 0
+            final_result = self._results_checking_Nones(node, state_index)
+            print("BEFORE THE WHILE LOOP: final_result", final_result)
+            while final_result is None:
+                print("IN THE WHILE LOOP: final_result", final_result)
+                final_result = self._results_checking_Nones(node, state_index)
+                print("IN THE WHILE LOOP AFTER: final_result", final_result)
+            print("\n GET VAL OUT", final_result)
+            return final_result
+            # result = self._results_checking_Nones(node, state_index)
+            # if isinstance(result, list):
+            #     if isinstance(result[0], list):
+            #         results_new = []
+            #         for res_l in result:
+            #             res_l_new = [getattr(res.output, self.field) for res in res_l]
+            #             results_new.append(res_l_new)
+            #         return results_new
+            # else:
+            #     return [getattr(res.output, self.field) for res in result]
+            # else:
+            #     return getattr(result.output, self.field)
+
+    def _results_checking_Nones(self, node, state_index):
+        if self._tmp_cnt > 16:
+            import time
+
+            time.sleep(1)
+        self._tmp_cnt += 1
+        if self._tmp_cnt > 20:
+            raise Exception("cant get results")
+        result = node.result(state_index=state_index)
+
+        if isinstance(result, list) and (not isinstance(result[0], list)):
+            if [
+                1
+                for el in result
+                if (el is None or getattr(el.output, self.field) is None)
+            ]:
+                self._results_checking_Nones(node, state_index)
             else:
-                return getattr(result.output, self.field)
+                res_ret = [getattr(res.output, self.field) for res in result]
+                print("\n RES RETURN 1", res_ret)
+                return res_ret
+
+        elif isinstance(result, list) and isinstance(result[0], list):
+            if isinstance(result[0], list):
+                tmp_none = []
+                for res_l in result:
+                    tmp_none += [
+                        1
+                        for el in res_l
+                        if (el is None or getattr(el.output, self.field) is None)
+                    ]
+                if tmp_none:
+                    self._results_checking_Nones(node, state_index)
+                else:
+                    results_new = []
+                    for res_l in result:
+                        res_l_new = [getattr(res.output, self.field) for res in res_l]
+                        results_new.append(res_l_new)
+                    print("\n RES RETURN 2", results_new)
+                    return results_new
+        else:
+            if result is None or getattr(result.output, self.field) is None:
+                self._results_checking_Nones(node, state_index)
+            else:
+                res_ret = getattr(result.output, self.field)
+                print("\n RES RETURN 3", res_ret)
+                return res_ret
