@@ -165,7 +165,7 @@ class TaskBase:
         """calculating checksum if self._checksum is None only
             (avoiding recomputing during the execution)
         """
-        if self._checksum is None:
+        if True:  # self._checksum is None:
             if self.state is None:
                 self._checksum = create_checksum(self.__class__.__name__, self.inputs)
             else:
