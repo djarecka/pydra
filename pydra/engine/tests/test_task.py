@@ -18,10 +18,10 @@ def test_output():
     assert res.output.out == 5
 
 
-@pytest.mark.xfail(
-    reason="when task run without submitter, results are not collected,"
-    "so result() method will not work"
-)
+# @pytest.mark.xfail(
+#     reason="when task run without submitter, results are not collected,"
+#     "so result() method will not work"
+# )
 def test_annotated_func():
     @to_task
     def testfunc(a: int, b: float = 0.1) -> ty.NamedTuple("Output", [("out1", float)]):
