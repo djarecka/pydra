@@ -1,6 +1,5 @@
 filelock >= 3.0.0
 cloudpickle >= 0.8.0
-filelock
 psutil
 pyld
 tornado==4.5.3
