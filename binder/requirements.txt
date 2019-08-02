@@ -4,5 +4,4 @@ psutil
 pyld
 numpy
 tornado==4.5.3
-jupyter
 jupyter_contrib_nbextensions
