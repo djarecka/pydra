@@ -193,7 +193,7 @@ def read_and_display(*cmd, strip=False, hide_display=False):
 # or run read_and_display if a loop is already running
 def execute(cmd, strip=False):
     loop = get_open_loop()
-    if loop.is_running():
+    if False:  # loop.is_running():
         rc, stdout, stderr = read_and_display(*cmd, strip=strip)
     else:
         rc, stdout, stderr = loop.run_until_complete(
