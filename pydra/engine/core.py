@@ -546,6 +546,7 @@ class Workflow(TaskBase):
             this can be checked with self.done)
         """
         for task in self.graph.nodes:
+            print("\n DONE", task.name, task.done, task.result())
             if not task.done:
                 return False
         return True
