@@ -201,6 +201,8 @@ class ShellCommandTask(TaskBase):
                 continue
             value = getattr(self.inputs, f.name)
             if value is not None:
+                if isinstance(value, tuple):
+                    value = list(value)
                 pos_args.append((pos, ensure_list(value)))
         # sorting all elements of the command
         pos_args.sort()
