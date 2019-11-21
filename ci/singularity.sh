@@ -6,8 +6,9 @@ function travis_before_install {
     apt-get update;
     apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
     libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
-
-    export PATH="${GOPATH}/bin:${PATH}";
+    wget https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz;
+    tar -C /usr/local -xzf go1.13.4.linux-amd64.tar.gz;
+    export PATH=$PATH:/usr/local/go/bin;
     export VERSION=3.5.0;
     wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
     tar -xzf singularity-${VERSION}.tar.gz;
