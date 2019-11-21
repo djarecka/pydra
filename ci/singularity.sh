@@ -1,7 +1,6 @@
 # local build environment
 
 function travis_before_install {
-    travis_retry bash <(wget -q -O- http://neuro.debian.net/_files/neurodebian-travis.sh);
     travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
     apt-get update;
     apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
