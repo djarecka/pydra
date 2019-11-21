@@ -8,6 +8,10 @@ function travis_before_install {
     wget https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz;
     sudo tar -C /usr/local -xzf go1.13.4.linux-amd64.tar.gz;
     export PATH=$PATH:/usr/local/go/bin;
+    SINGULARITY_BASE="${GOPATH}/src/github.com/sylabs/singularity";
+    export PATH="${GOPATH}/bin:${PATH}";
+    mkdir -p "${GOPATH}/src/github.com/sylabs";
+    cd "${GOPATH}/src/github.com/sylabs";
     export VERSION=3.5.0;
     wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
     tar -xzf singularity-${VERSION}.tar.gz;
@@ -60,7 +64,7 @@ function travis_before_script {
 
 function travis_script {
     if [ "$CHECK_TYPE" = "test" ]; then
-        pytest -vs -n auto pydra/engine/tests/test_s*.py
+        pytest -vs -n auto pydra/engine/tests/test_sing*.py
     elif [ "$CHECK_TYPE" = "style" ]; then
         black --check pydra tools setup.py
     fi
