@@ -9,6 +9,7 @@ function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
         apt-get update;
         apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 libarchive-dev libgpgme11-dev libseccomp-dev -y;
+        sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers;
         SINGULARITY_BASE="${GOPATH}/src/github.com/sylabs/singularity";
         export PATH="${GOPATH}/bin:${PATH}";
         mkdir -p "${GOPATH}/src/github.com/sylabs";
