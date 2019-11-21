@@ -18,7 +18,8 @@ function travis_install {
         cd singularity;
         ./mconfig -v -p /usr/local;
         make -j `nproc 2>/dev/null || echo 1` -C ./builddir all;
-        sudo make -C ./builddir install
+        sudo make -C ./builddir install;
+        cd -
         if [ "$INSTALL_TYPE" = "pip" ]; then
             pip install $PIP_ARGS .
         elif [ "$INSTALL_TYPE" = "install" ]; then
