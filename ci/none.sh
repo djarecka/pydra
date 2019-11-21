@@ -47,7 +47,7 @@ function travis_before_script {
 
 function travis_script {
     if [ "$CHECK_TYPE" = "test" ]; then
-        pytest -vs -n auto pydra/engine/tests/test_singularity.py
+        pytest -vs -n auto pydra/engine/tests/test_s*.py
     elif [ "$CHECK_TYPE" = "style" ]; then
         black --check pydra tools setup.py
     fi
