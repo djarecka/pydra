@@ -7,10 +7,7 @@ function travis_before_install {
     libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
     wget https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz;
     sudo tar -C /usr/local -xzf go1.13.4.linux-amd64.tar.gz;
-    export PATH=$PATH:/usr/local/go/bin;
-    SINGULARITY_BASE="${GOPATH}/src/github.com/sylabs/singularity";
-    export PATH="${GOPATH}/bin:${PATH}";
-    mkdir -p "${GOPATH}/src/github.com/sylabs";
+    export PATH=/usr/local/go/bin:$PATH;
     cd "${GOPATH}/src/github.com/sylabs";
     export VERSION=3.5.0;
     wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
