@@ -3,23 +3,23 @@
 function travis_before_install {
     travis_retry bash <(wget -q -O- http://neuro.debian.net/_files/neurodebian-travis.sh);
     travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
+    apt-get update;
+    apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
+    libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
+
+    export PATH="${GOPATH}/bin:${PATH}";
+    export VERSION=3.5.0;
+    wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
+    tar -xzf singularity-${VERSION}.tar.gz;
+    cd singularity;
+    ./mconfig;
+    make -C ./builddir;
+    sudo make -C ./builddir install;
+    cd -
 }
 
 function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
-        apt-get update;
-        apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 libarchive-dev libgpgme11-dev libseccomp-dev -y;
-        sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers;
-        SINGULARITY_BASE="${GOPATH}/src/github.com/sylabs/singularity";
-        export PATH="${GOPATH}/bin:${PATH}";
-        mkdir -p "${GOPATH}/src/github.com/sylabs";
-        cd "${GOPATH}/src/github.com/sylabs";
-        git clone -b release-3.2 https://github.com/sylabs/singularity;
-        cd singularity;
-        ./mconfig -v -p /usr/local;
-        make -j `nproc 2>/dev/null || echo 1` -C ./builddir all;
-        sudo make -C ./builddir install;
-        cd -
         if [ "$INSTALL_TYPE" = "pip" ]; then
             pip install $PIP_ARGS .
         elif [ "$INSTALL_TYPE" = "install" ]; then
