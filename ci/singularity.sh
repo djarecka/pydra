@@ -7,6 +7,8 @@ function travis_before_install {
 
 function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
+        apt-get update;
+        apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 libarchive-dev libgpgme11-dev libseccomp-dev -y
         if [ "$INSTALL_TYPE" = "pip" ]; then
             pip install $PIP_ARGS .
         elif [ "$INSTALL_TYPE" = "install" ]; then
