@@ -8,7 +8,16 @@ function travis_before_install {
 function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
         apt-get update;
-        apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 libarchive-dev libgpgme11-dev libseccomp-dev -y
+        apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 libarchive-dev libgpgme11-dev libseccomp-dev -y;
+        SINGULARITY_BASE="${GOPATH}/src/github.com/sylabs/singularity";
+        export PATH="${GOPATH}/bin:${PATH}";
+        mkdir -p "${GOPATH}/src/github.com/sylabs";
+        cd "${GOPATH}/src/github.com/sylabs";
+        git clone -b release-3.2 https://github.com/sylabs/singularity;
+        cd singularity;
+        ./mconfig -v -p /usr/local;
+        make -j `nproc 2>/dev/null || echo 1` -C ./builddir all;
+        sudo make -C ./builddir install
         if [ "$INSTALL_TYPE" = "pip" ]; then
             pip install $PIP_ARGS .
         elif [ "$INSTALL_TYPE" = "install" ]; then
