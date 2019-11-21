@@ -36,7 +36,7 @@ env:
     - CHECK_TYPE="test"
     - INSTALL_TYPE="pip"
     - INSTALL_DEPENDS="pip setuptools"
-    - JOBQUEUE="none"
+    - JOBQUEUE="singularity"
 
 #  matrix:
 #    - INSTALL_TYPE="install"
