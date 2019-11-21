@@ -2,8 +2,8 @@
 
 function travis_before_install {
     travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
-    apt-get update;
-    apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
+    sudo apt-get update;
+    sudo apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
     libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
     wget https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz;
     sudo tar -C /usr/local -xzf go1.13.4.linux-amd64.tar.gz;
