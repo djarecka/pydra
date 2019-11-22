@@ -5,14 +5,14 @@ function travis_before_install {
     sudo apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
     libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
     export VERSION=3.5.0;
-    wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
+    travis_retry wget -q https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
     tar -xzf singularity-${VERSION}.tar.gz;
     cd singularity;
     ./mconfig;
     make -C ./builddir;
     sudo make -C ./builddir install;
     cd -;
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh;
+    travis_retry -q wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh;
     bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda;
     eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 }
@@ -28,7 +28,7 @@ function travis_before_script {
 }
 
 function travis_script {
-    pytest -vs pydra/engine/tests/test_singularity.py
+    pytest -vs --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra/engine/tests/test_singularity.py
 }
 
 function travis_after_script {
