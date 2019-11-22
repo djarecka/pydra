@@ -18,51 +18,17 @@ function travis_before_install {
 }
 
 function travis_install {
-    if [ "$CHECK_TYPE" = "test" ]; then
-        if [ "$INSTALL_TYPE" = "pip" ]; then
-            pip install $PIP_ARGS .
-        elif [ "$INSTALL_TYPE" = "install" ]; then
-            python setup.py install
-        elif [ "$INSTALL_TYPE" = "develop" ]; then
-            python setup.py develop
-        elif [ "$INSTALL_TYPE" = "sdist" ]; then
-            python setup.py sdist
-            pip install dist/*.tar.gz
-        elif [ "$INSTALL_TYPE" = "wheel" ]; then
-            python setup.py bdist_wheel
-            pip install dist/*.whl
-        fi
-        # Verify import with bare install
-        python -c 'import pydra; print(pydra.__version__)'
-    fi
+    python setup.py develop
+    # Verify import with bare install
+    python -c 'import pydra; print(pydra.__version__)'
 }
 
 function travis_before_script {
-    if [ "$CHECK_TYPE" = "test" ]; then
-        # Install test dependencies using similar methods...
-        # Extras are interpreted by pip, not setup.py, so develop becomes editable
-        # and install just becomes pip
-        if [ "$INSTALL_TYPE" = "develop" ]; then
-            pip install -e ".[test]"
-        elif [ "$INSTALL_TYPE" = "sdist" ]; then
-            pip install "$( ls dist/pydra*.tar.gz )[test]"
-        elif [ "$INSTALL_TYPE" = "wheel" ]; then
-            pip install "$( ls dist/pydra*.whl )[test]"
-        else
-            # extras don't seem possible with setup.py install, so switch to pip
-            pip install ".[test]"
-        fi
-    elif [ "$CHECK_TYPE" = "style" ]; then
-        pip install black==19.3b0
-    fi
+    pip install -e ".[test]"
 }
 
 function travis_script {
-    if [ "$CHECK_TYPE" = "test" ]; then
-        pytest -vs pydra/engine/tests/test_sing*.py
-    elif [ "$CHECK_TYPE" = "style" ]; then
-        black --check pydra tools setup.py
-    fi
+    pytest -vs pydra/engine/tests/test_singularity.py
 }
 
 function travis_after_script {
