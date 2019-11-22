@@ -24,6 +24,8 @@ python:
 #      - libgpgme11-dev
 #      - libseccomp-dev
 
+go:
+  - 1.13
 
 services:
   - docker
