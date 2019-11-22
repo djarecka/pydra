@@ -28,7 +28,7 @@ function travis_before_script {
 }
 
 function travis_script {
-    pytest -vs --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra
+    pytest -vs --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra/engine/tests/test_sing*.py
 }
 
 function travis_after_script {
