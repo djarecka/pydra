@@ -6,9 +6,9 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-#python:
-#  - 3.7
-#  - 3.8
+python:
+  - 3.7
+  - 3.8
 
 #addons:
 #  apt:
@@ -24,8 +24,8 @@ cache:
 #      - libgpgme11-dev
 #      - libseccomp-dev
 
-go:
-  - 1.13
+#go:
+#  - 1.13
 
 services:
   - docker
@@ -35,10 +35,10 @@ env:
     - CHECK_TYPE="test"
     - INSTALL_TYPE="pip"
     - INSTALL_DEPENDS="pip setuptools"
-    - JOBQUEUE="singularity"
+    - JOBQUEUE="none"
 
-#  matrix:
-#    - INSTALL_TYPE="install"
+  matrix:
+    - INSTALL_TYPE="install"
 #    - INSTALL_TYPE="develop"
 #    - INSTALL_TYPE="sdist"
 #    - INSTALL_TYPE="wheel"
@@ -49,10 +49,11 @@ env:
 
 # This should only fail with pip 10.0.1 with URL requirements (e.g., "package @ URL")
 # Useful for testing un-released upstream fixes
-#matrix:
-#  include:
-#  - python: 3.7
-#    env: JOBQUEUE="slurm"
+matrix:
+  include:
+  - language: go
+    go: 1.13
+    env: JOBQUEUE="singularity"
 #  allow_failures:
 #  - python: 3.7
 #    env: INSTALL_DEPENDS="pip==10.0.1 setuptools==30.3.0"
