@@ -12,7 +12,7 @@ function travis_before_install {
     make -C ./builddir;
     sudo make -C ./builddir install;
     cd -;
-    travis_retry -q wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh;
+    travis_retry wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh;
     bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda;
     eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 }
@@ -28,7 +28,7 @@ function travis_before_script {
 }
 
 function travis_script {
-    pytest -vs --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra/engine/tests/test_sing*.py
+    pytest -vs --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra
 }
 
 function travis_after_script {
