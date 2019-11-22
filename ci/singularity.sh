@@ -1,7 +1,6 @@
 # local build environment
 
 function travis_before_install {
-    travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
     sudo apt-get update;
     sudo apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
     libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
