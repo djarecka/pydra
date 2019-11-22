@@ -3,7 +3,7 @@
 function travis_before_install {
     sudo apt-get update;
     sudo apt-get install flawfinder squashfs-tools uuid-dev libuuid1 libffi-dev libssl-dev libssl1.0.0 \
-    libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config python3.7 -y;
+    libarchive-dev libgpgme11-dev libseccomp-dev wget gcc make pkg-config -y;
     export VERSION=3.5.0;
     wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz;
     tar -xzf singularity-${VERSION}.tar.gz;
@@ -11,7 +11,10 @@ function travis_before_install {
     ./mconfig;
     make -C ./builddir;
     sudo make -C ./builddir install;
-    cd -
+    cd -;
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh;
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda;
+    eval "$($HOME/miniconda/bin/conda shell.bash hook)"
 }
 
 function travis_install {
