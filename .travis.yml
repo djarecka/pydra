@@ -1,6 +1,6 @@
 dist: xenial
 sudo: true
-language: python
+language: go
 
 cache:
   directories:
