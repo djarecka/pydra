@@ -399,14 +399,7 @@ class ContainerTask(ShellCommandTask):
 
     @property
     def cmdline(self):
-        """Get the actual command line that will be submitted."""
-        orig_inputs = attr.asdict(self.inputs)
-        modified_inputs = template_update(self.inputs)
-        if modified_inputs is not None:
-            self.inputs = attr.evolve(self.inputs, **modified_inputs)
-        cmdline = " ".join(self.container_args + self.command_args)
-        self.inputs = attr.evolve(self.inputs, **orig_inputs)
-        return cmdline
+        return " ".join(self.container_args + self.command_args)
 
     @property
     def container_args(self):
