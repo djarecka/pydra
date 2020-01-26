@@ -210,19 +210,11 @@ class FunctionTask(TaskBase):
 class ShellCommandTask(TaskBase):
     """Wrap a shell command as a task element."""
 
-    def __new__(cls, container=None, *args, **kwargs):
-        if container == "docker":
-            if "image" not in kwargs:
-                raise Exception(
-                    "when task run in a container, the image has to be specified"
-                )
-            return DockerTask(*args, **kwargs)
-        elif container == "singularity":
-            if "image" not in kwargs:
-                raise Exception(
-                    "when task run in a container, the image has to be specified"
-                )
-            return SingularityTask(*args, **kwargs)
+    def __new__(cls, container_info=None, *args, **kwargs):
+        if container_info:
+            if container_info[0] == "docker":
+                kwargs["image"] = container_info[1]
+                return DockerTask(*args, **kwargs)
         else:
             return super(ShellCommandTask, cls).__new__(cls)
 
@@ -527,6 +519,7 @@ class DockerTask(ContainerTask):
             **kwargs,
         )
         self.inputs.container_xargs = ["--rm"]
+        print("\n INPUT in DockerTask", self.inputs)
 
     @property
     def container_args(self):

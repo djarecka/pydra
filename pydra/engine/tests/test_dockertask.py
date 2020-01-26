@@ -69,7 +69,7 @@ def test_docker_1_dockerflag(plugin):
     """
     cmd = "whoami"
     shocky = ShellCommandTask(
-        name="shocky", executable=cmd, container="docker", image="busybox"
+        name="shocky", executable=cmd, container_info=("docker", "busybox")
     )
 
     with Submitter(plugin=plugin) as sub:
