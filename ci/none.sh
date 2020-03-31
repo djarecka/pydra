@@ -8,8 +8,11 @@ function travis_before_install {
       brew update;
       brew install python3
       travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
- #     echo "c@@@@my python"
-#      echo $(pip3 --version)
+      echo "c@@@@my python"
+      echo $(pip --version)
+      echo $(pip3 --version)
+      echo $(python --version)
+      echo $(python3 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
 }
