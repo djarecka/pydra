@@ -21,7 +21,7 @@ function travis_install {
         echo "BLE"
         echo "$INSTALL_TYPE"
         if [ "$INSTALL_TYPE" = "pip" ]; then
-            pip install $PIP_ARGS .
+            #pip install $PIP_ARGS .
             if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
                 pip install $PIP_ARGS .
             elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
