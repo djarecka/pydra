@@ -42,6 +42,7 @@ matrix:
     env:
         - TRAVIS_PYTHON_VERSION="3.7"
         - PYTHON_VERSION=3.7
+        - INSTALL_TYPE="install"
         - VENV=venv
 
 #  - python: 3.7

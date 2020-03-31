@@ -27,7 +27,8 @@ function travis_install {
             fi
 
         elif [ "$INSTALL_TYPE" = "install" ]; then
-            python setup.py install
+            echo "Hello"
+            python3 setup.py install
         elif [ "$INSTALL_TYPE" = "develop" ]; then
             python setup.py develop
         elif [ "$INSTALL_TYPE" = "sdist" ]; then
