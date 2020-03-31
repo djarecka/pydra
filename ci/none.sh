@@ -25,7 +25,7 @@ function travis_install {
             if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
                 pip install $PIP_ARGS .
             elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-                echo "Helo"
+                echo "Hello from pip"
                 pip3 install $PIP_ARGS .
             fi
 
