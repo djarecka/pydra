@@ -7,7 +7,7 @@ function travis_before_install {
       brew update;
 #      brew install python3
       echo "c@@@@my python"
-      echo $(pip --version)
+      echo $(pip2 --version)
       echo $(pip3 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
@@ -19,10 +19,13 @@ function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
         if [ "$INSTALL_TYPE" = "pip" ]; then
             pip install $PIP_ARGS .
- #           if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
- #               pip install $PIP_ARGS .
- #           elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
- #
+            if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+                pip install $PIP_ARGS .
+            elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+                echo "Helo"
+                pip3 install $PIP_ARGS .
+            fi
+
         elif [ "$INSTALL_TYPE" = "install" ]; then
             python setup.py install
         elif [ "$INSTALL_TYPE" = "develop" ]; then
