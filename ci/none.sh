@@ -5,8 +5,8 @@ function travis_before_install {
       travis_retry bash <(wget -q -O- http://neuro.debian.net/_files/neurodebian-travis.sh);
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update;
-      brew install python3
-      echo "@@@@my python"
+#      brew install python3
+      echo "c@@@@my python"
       echo $(python --version)
       echo $(python3 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
