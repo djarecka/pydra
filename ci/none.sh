@@ -5,11 +5,14 @@ function travis_before_install {
       travis_retry bash <(wget -q -O- http://neuro.debian.net/_files/neurodebian-travis.sh);
       travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update;
-      brew install python@3.8
-      travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
+      #brew update;
+      #brew install python@3.8
+      #travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
+      wget https://raw.githubusercontent.com/mjirik/discon/master/tools/install_conda.sh && source install_conda.sh;
+      conda create --yes -n travis python=3.7
       echo "my python pip"
-      echo $(pip3.8 --version)
+      echo $(python --version)
+      echo $(pip --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
 }
