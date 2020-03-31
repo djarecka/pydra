@@ -37,7 +37,7 @@ matrix:
   include:
   - os: osx
     osx_image: xcode11.2
-    language: generic
+    language: shell
     python: 3.7
     env: TRAVIS_PYTHON_VERSION="3.7"
 #  - python: 3.7
