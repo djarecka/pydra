@@ -40,8 +40,8 @@ matrix:
     language: generic
     #env: TRAVIS_PYTHON_VERSION="3.7"
     env:
-        - TRAVIS_PYTHON_VERSION="3.7"
-        - PYTHON_VERSION=3.7
+        - TRAVIS_PYTHON_VERSION="3.8"
+        - PYTHON_VERSION=3.8
         - INSTALL_TYPE="pip"
         - VENV=venv
 

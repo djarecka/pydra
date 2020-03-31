@@ -6,12 +6,12 @@ function travis_before_install {
       travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update;
-      brew install python3
+      brew install python@3.8
       travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
       echo "c@@@@my python"
       echo $(python3 -m pip --version --version)
-      echo $(pip3 --version)
-      echo $(python3 --version)
+      echo $(pip3.8 --version)
+      echo $(python3.8 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
 }
