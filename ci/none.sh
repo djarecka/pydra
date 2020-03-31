@@ -8,17 +8,14 @@ function travis_before_install {
       brew update;
       brew install python@3.8
       travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
-      echo "c@@@@my python"
-      echo $(python3 -m pip --version --version)
+      echo "my python pip"
       echo $(pip3.8 --version)
-      echo $(python3.8 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
 }
 
 function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
-        echo "BLE"
         echo "$INSTALL_TYPE"
         if [ "$INSTALL_TYPE" = "pip" ]; then
             #pip install $PIP_ARGS .
