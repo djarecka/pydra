@@ -18,6 +18,7 @@ function travis_before_install {
 function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
         if [ "$INSTALL_TYPE" = "pip" ]; then
+            pip install $PIP_ARGS .
  #           if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
  #               pip install $PIP_ARGS .
  #           elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
