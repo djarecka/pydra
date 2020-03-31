@@ -1,7 +1,7 @@
 # local build environment
 
 function travis_before_install {
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       travis_retry bash <(wget -q -O- http://neuro.debian.net/_files/neurodebian-travis.sh);
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update;
