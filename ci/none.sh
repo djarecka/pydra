@@ -26,6 +26,7 @@ function travis_install {
                 pip install $PIP_ARGS .
             elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
                 echo "Hello from pip"
+                echo $(pip3.8 --version)
                 pip3.8 install $PIP_ARGS .
             fi
 
