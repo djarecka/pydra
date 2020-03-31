@@ -7,7 +7,6 @@ function travis_before_install {
       brew update;
 #      brew install python3
       echo "c@@@@my python"
-      echo $(pip2 --version)
       echo $(pip3 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
