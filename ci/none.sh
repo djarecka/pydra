@@ -9,7 +9,11 @@ function travis_before_install {
       #brew install python@3.8
       #travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
       wget https://raw.githubusercontent.com/mjirik/discon/master/tools/install_conda.sh && source install_conda.sh;
-      conda create --yes -n travis python=3.7
+      conda config --add channels conda-forge;
+      conda update -q conda;
+      conda create --yes -n travis python=3.7;
+      source activate travis;
+      travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
       echo "my python pip"
       echo $(python --version)
       echo $(pip --version)
