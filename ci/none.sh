@@ -6,6 +6,9 @@ function travis_before_install {
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update;
       brew install python3
+      echo "@@@@my python"
+      echo $(python --version)
+      echo $(python3 --version)
      # brew install $TRAVIS_PYTHON_VERSION;
     fi
 
