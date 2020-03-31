@@ -17,6 +17,8 @@ function travis_before_install {
 
 function travis_install {
     if [ "$CHECK_TYPE" = "test" ]; then
+        echo "BLE"
+        echo "$INSTALL_TYPE"
         if [ "$INSTALL_TYPE" = "pip" ]; then
             pip install $PIP_ARGS .
             if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
