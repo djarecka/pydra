@@ -1,6 +1,8 @@
 dist: xenial
 sudo: true
 language: python
+os:
+  - linux
 
 cache:
   directories:
@@ -33,6 +35,9 @@ env:
 # Useful for testing un-released upstream fixes
 matrix:
   include:
+  - os: osx
+    python: 3.7
+    env: INSTALL_TYPE="install"
   - python: 3.7
     env: JOBQUEUE="slurm"
   - language: go
