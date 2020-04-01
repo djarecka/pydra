@@ -6,9 +6,9 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-python:
-  - 3.7
-  - 3.8
+#python:
+#  - 3.7
+#  - 3.8
 
 services:
   - docker
@@ -33,11 +33,18 @@ env:
 # Useful for testing un-released upstream fixes
 matrix:
   include:
+#  - os: windows
+#    language: generic
+#    env:
+#      - JOBQUEUE="osx"
+#      - CONDA_VERSION="3.7"
   - os: windows
-    language: generic
+    language: sh
+    python: "3.7"
     env:
-      - JOBQUEUE="osx"
-      - CONDA_VERSION="3.7"
+      - JOBQUEUE="win"
+
+
 #  - python: 3.7
 #    env: JOBQUEUE="slurm"
 #  - language: go
