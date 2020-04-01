@@ -42,6 +42,7 @@ matrix:
     env:
 #        - TRAVIS_PYTHON_VERSION="3.8"
 #        - PYTHON_VERSION=3.8
+        - JOBQUEUE="osx"
         - INSTALL_TYPE="pip"
         - VENV=venv
 
