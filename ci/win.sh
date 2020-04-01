@@ -1,7 +1,7 @@
 # local build environment
 
 function travis_before_install {
-      choco install python3;
+      choco install python --version 3.7;
       export PATH="/c/Python37:/c/Python37/Scripts:$PATH";
       python -m pip install --upgrade pip;
       pip install --upgrade pip;
