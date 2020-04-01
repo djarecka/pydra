@@ -14,7 +14,7 @@ function travis_before_install {
       echo $(python3 --version)
       echo $(pip3 --version)
 
-      travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
+      travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
 }
 
 function travis_install {
