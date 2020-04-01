@@ -7,10 +7,14 @@ function travis_before_install {
       pip3 install --upgrade pip;
      # virtualenv $HOME/venv;
      # source $HOME/venv/Scripts/activate;
-      travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
       echo "my python pip"
       echo $(python --version)
       echo $(pip --version)
+      echo "my python pip 33"
+      echo $(python3 --version)
+      echo $(pip3 --version)
+
+      travis_retry python3 -m pip install --upgrade $INSTALL_DEPENDS
 }
 
 function travis_install {
