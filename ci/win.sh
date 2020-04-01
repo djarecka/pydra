@@ -5,8 +5,8 @@ function travis_before_install {
       export PATH="/c/Python37:/c/Python37/Scripts:$PATH";
       python -m pip install --upgrade pip;
       pip3 install --upgrade pip;
-     # virtualenv $HOME/venv;
-     # source $HOME/venv/Scripts/activate;
+      virtualenv $HOME/venv;
+      source $HOME/venv/Scripts/activate;
       echo "my python pip"
       echo $(python --version)
       echo $(pip --version)
