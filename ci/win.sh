@@ -3,6 +3,8 @@
 function travis_before_install {
       choco install python3;
       export PATH="/c/Python37:/c/Python37/Scripts:$PATH";
+      virtualenv $HOME/venv;
+      source $HOME/venv/Scripts/activate;
       travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
       echo "my python pip"
       echo $(python --version)
