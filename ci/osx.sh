@@ -4,7 +4,7 @@ function travis_before_install {
       wget https://raw.githubusercontent.com/mjirik/discon/master/tools/install_conda.sh && source install_conda.sh;
       conda config --add channels conda-forge;
       conda update -q conda;
-      conda create --yes -n travis python=3.7;
+      conda create --yes -n travis python=$CONDA_VERSION;
       source activate travis;
       travis_retry python -m pip install --upgrade $INSTALL_DEPENDS
       echo "my python pip"
