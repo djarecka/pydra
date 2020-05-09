@@ -68,14 +68,24 @@ class DistributedWorker(Worker):
         self._jobs = 0
 
     def _prepare_runscripts(self, task, interpreter="/bin/sh", rerun=False):
-        script_dir = (
-            task.cache_dir / f"{self.__class__.__name__}_scripts" / task.checksum
-        )
+
+        if isinstance(task, TaskBase):
+            checksum = task.checksum
+            cache_dir = task.cache_dir
+        else:
+            checksum = task[-1].checksum
+            cache_dir = task[-1].cache_dir
+
+        script_dir = cache_dir / f"{self.__class__.__name__}_scripts" / checksum
         script_dir.mkdir(parents=True, exist_ok=True)
         if not (script_dir / "_task.pkl").exists():
-            save(script_dir, task=task)
-        pyscript = create_pyscript(script_dir, task.checksum, rerun=rerun)
-        batchscript = script_dir / f"batchscript_{task.checksum}.sh"
+            if isinstance(task, TaskBase):
+                save(script_dir, task=task)
+            else:
+                print("script_dir", script_dir)
+                save(script_dir, task=task[-1])
+        pyscript = create_pyscript(script_dir, checksum, rerun=rerun)
+        batchscript = script_dir / f"batchscript_{checksum}.sh"
         bcmd = "\n".join(
             (
                 f"#!{interpreter}",
@@ -234,7 +244,13 @@ class SlurmWorker(DistributedWorker):
         sargs = self.sbatch_args.split()
         jobname = re.search(r"(?<=-J )\S+|(?<=--job-name=)\S+", self.sbatch_args)
         if not jobname:
-            jobname = ".".join((task.name, task.checksum))
+            if isinstance(task, TaskBase):
+                name = task.name
+                checksum = task.checksum
+            else:
+                name = task[-1].name
+                checksum = task[-1].name
+            jobname = ".".join((name, checksum))
             sargs.append(f"--job-name={jobname}")
         output = re.search(r"(?<=-o )\S+|(?<=--output=)\S+", self.sbatch_args)
         if not output:

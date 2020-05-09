@@ -111,6 +111,7 @@ def save(task_path: Path, result=None, task=None):
     if task is None and result is None:
         raise ValueError("Nothing to be saved")
     task_path.mkdir(parents=True, exist_ok=True)
+    # breakpoint()
     if result:
         if Path(task_path).name.startswith("Workflow"):
             # copy files to the workflow directory
@@ -118,6 +119,8 @@ def save(task_path: Path, result=None, task=None):
         with (task_path / "_result.pklz").open("wb") as fp:
             cp.dump(result, fp)
     if task:
+        # print("TASK PKL", task_path)# / "_task.pklz")
+        # breakpoint()
         with (task_path / "_task.pklz").open("wb") as fp:
             cp.dump(task, fp)
 

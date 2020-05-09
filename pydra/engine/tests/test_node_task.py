@@ -692,7 +692,7 @@ def test_task_nostate_cachelocations_updated(plugin, tmpdir):
 # Tests for tasks with states (i.e. with splitter)
 
 
-@pytest.mark.flaky(reruns=2)  # when dask
+# @pytest.mark.flaky(reruns=2)  # when dask
 def test_task_state_1(plugin_dask_opt):
     """ task with the simplest splitter"""
     nn = fun_addtwo(name="NA").split(splitter="a", a=[3, 5])
