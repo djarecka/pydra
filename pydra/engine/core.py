@@ -517,7 +517,6 @@ class TaskBase:
         pkl_files.mkdir(exist_ok=True)
         task_path = pkl_files / f"task_{self.name}.pklz"
         input_path = pkl_files / f"task_orig_input_{self.name}.pklz"
-
         # the pickle files should be independent on index, so could be saved once only
         if ind == 0:
             task_copy = copy(self)

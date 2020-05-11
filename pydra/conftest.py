@@ -19,7 +19,7 @@ def pytest_generate_tests(metafunc):
         if metafunc.config.getoption("dask"):
             Plugins = []
         elif bool(shutil.which("sbatch")):
-            Plugins = ["cf", "slurm"]
+            Plugins = ["slurm"]
         else:
             Plugins = ["cf"]
         metafunc.parametrize("plugin", Plugins)

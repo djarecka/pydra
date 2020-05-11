@@ -73,7 +73,7 @@ class DistributedWorker(Worker):
             checksum = task.checksum
             cache_dir = task.cache_dir
         else:
-            checksum = task[-1].checksum
+            checksum = task[-1].checksum_states()[task[0]]
             cache_dir = task[-1].cache_dir
 
         script_dir = cache_dir / f"{self.__class__.__name__}_scripts" / checksum
@@ -82,7 +82,6 @@ class DistributedWorker(Worker):
             if isinstance(task, TaskBase):
                 save(script_dir, task=task)
             else:
-                print("script_dir", script_dir)
                 save(script_dir, task=task[-1])
         pyscript = create_pyscript(script_dir, checksum, rerun=rerun)
         batchscript = script_dir / f"batchscript_{checksum}.sh"
@@ -249,7 +248,7 @@ class SlurmWorker(DistributedWorker):
                 checksum = task.checksum
             else:
                 name = task[-1].name
-                checksum = task[-1].name
+                checksum = task[-1].checksum_states()[task[0]]
             jobname = ".".join((name, checksum))
             sargs.append(f"--job-name={jobname}")
         output = re.search(r"(?<=-o )\S+|(?<=--output=)\S+", self.sbatch_args)
@@ -296,6 +295,7 @@ class SlurmWorker(DistributedWorker):
         if not stdout:
             raise RuntimeError("Job information not found")
         m = self._sacct_re.search(stdout)
+        # TODO: chyba self.error nie powinin byc jedym path, sprawdz master
         if int(m.group("exit_code")) != 0 or m.group("status") != "COMPLETED":
             if m.group("status") in ["RUNNING", "PENDING"]:
                 return False
