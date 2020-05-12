@@ -241,9 +241,18 @@ class SlurmWorker(DistributedWorker):
 
     async def _submit_job(self, task, batchscript):
         """Coroutine that submits task runscript and polls job until completion or error."""
-        script_dir = (
-            task.cache_dir / f"{self.__class__.__name__}_scripts" / task.checksum
-        )
+        if isinstance(task, TaskBase):
+            checksum = task.checksum
+            cache_dir = task.cache_dir
+        else:
+            checksum = task[-1].checksum_states()[task[0]]
+            cache_dir = task[-1].cache_dir
+
+        script_dir = cache_dir / f"{self.__class__.__name__}_scripts" / checksum
+
+        # script_dir = (
+        #     task.cache_dir / f"{self.__class__.__name__}_scripts" / task.checksum
+        # )
         sargs = self.sbatch_args.split()
         jobname = re.search(r"(?<=-J )\S+|(?<=--job-name=)\S+", self.sbatch_args)
         if not jobname:
