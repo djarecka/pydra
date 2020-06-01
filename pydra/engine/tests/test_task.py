@@ -5,13 +5,7 @@ import os, sys
 import pytest
 
 from ... import mark
-from ..task import (
-    AuditFlag,
-    ShellCommandTask,
-    ContainerTask,
-    DockerTask,
-    SingularityTask,
-)
+from ..task import AuditFlag, ShellCommandTask, DockerTask, SingularityTask
 from ...utils.messenger import FileMessenger, PrintMessenger, collect_messages
 from .utils import gen_basic_wf
 
@@ -307,6 +301,31 @@ def test_exception_func():
 
     bad_funk = raise_exception(c=17, d=3.2)
     assert pytest.raises(Exception, bad_funk)
+
+
+def test_result_none_1():
+    """ checking if None is properly returned as the result"""
+
+    @mark.task
+    def fun_none(x):
+        return None
+
+    task = fun_none(name="none", x=3)
+    res = task()
+    assert res.output.out is None
+
+
+def test_result_none_2():
+    """ checking if None is properly set for all outputs """
+
+    @mark.task
+    def fun_none(x) -> (ty.Any, ty.Any):
+        return None
+
+    task = fun_none(name="none", x=3)
+    res = task()
+    assert res.output.out1 is None
+    assert res.output.out2 is None
 
 
 def test_audit_prov(tmpdir):
