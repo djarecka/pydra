@@ -428,22 +428,21 @@ cache_path = Path("{str(script_path)}")
     if ind is None:
         content += f"""task_pkl = (cache_path / "_task.pklz")
 # submit task
-from pydra.engine.helpers import load_task
-task = load_task(ind={ind}, task_main_pkl=task_pkl)
-task(rerun={rerun})
+from pydra.engine.helpers import load_and_run
+load_and_run(ind={ind}, task_main_pkl=task_pkl, rerun={rerun})
 """
     else:
         content += f"""from pydra.engine.helpers import load_and_run
 task_pkl = (cache_path / "_task_main.pklz")
 # loading and running the task
-task = load_and_run(ind={ind}, task_main_pkl=task_pkl, rerun={rerun})
+load_and_run(ind={ind}, task_main_pkl=task_pkl, rerun={rerun})
 """
-    content += f"""# checking results
-if not task.result():
-    raise Exception("Something went wrong")
-print("Completed", task.checksum, task)
-task_pkl.unlink()
-"""
+    #     content += f"""# checking results
+    # if not task.result():
+    #     raise Exception("Something went wrong")
+    # print("Completed", task.checksum, task)
+    # task_pkl.unlink()
+    # """
     pyscript = script_path / f"pyscript_{checksum}.py"
     with pyscript.open("wt") as fp:
         fp.writelines(content)
@@ -563,7 +562,7 @@ def load_and_run(task_main_pkl, ind=None, rerun=False, **kwargs):
      """
     task = load_task(task_main_pkl=task_main_pkl, ind=ind)
     task._run(rerun=rerun, **kwargs)
-    return task
+    # return task
 
 
 async def load_and_run_async(
