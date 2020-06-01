@@ -199,7 +199,7 @@ class SlurmWorker(DistributedWorker):
         """
         Initialize SLURM Worker.
 
-        Parameters
+        Parameters tmp
         ----------
         poll_delay : seconds
             Delay between polls to slurmd
