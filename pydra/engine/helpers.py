@@ -428,9 +428,8 @@ cache_path = Path("{str(script_path)}")
     if ind is None:
         content += f"""task_pkl = (cache_path / "_task.pklz")
 # submit task
-from pydra.engine.helpers import load_task
-task = load_task(ind={ind}, task_main_pkl=task_pkl)
-task(rerun={rerun})
+from pydra.engine.helpers import load_and_run
+task = load_and_run(ind={ind}, task_main_pkl=task_pkl, rerun={rerun})
 """
     else:
         content += f"""from pydra.engine.helpers import load_and_run
