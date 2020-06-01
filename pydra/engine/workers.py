@@ -202,7 +202,7 @@ class ConcurrentFuturesWorker(Worker):
         else:  # it could be tuple that includes pickle files with tasks and inputs
             ind, task_main_pkl, task_orig = runnable
             res = await self.loop.run_in_executor(
-                self.pool, load_and_run, ind, task_main_pkl, rerun
+                self.pool, load_and_run, task_main_pkl, ind, rerun
             )
         return res
 
