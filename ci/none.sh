@@ -30,16 +30,19 @@ function travis_before_script {
         # Install test dependencies using similar methods...
         # Extras are interpreted by pip, not setup.py, so develop becomes editable
         # and install just becomes pip
+	pip install "https://github.com/boutiques/boutiques/tarball/develop"
         if [ "$INSTALL_TYPE" = "develop" ]; then
             pip install -e ".[test]"
         elif [ "$INSTALL_TYPE" = "sdist" ]; then
             pip install "$( ls dist/pydra*.tar.gz )[test]"
+
         elif [ "$INSTALL_TYPE" = "wheel" ]; then
             pip install "$( ls dist/pydra*.whl )[test]"
         else
             # extras don't seem possible with setup.py install, so switch to pip
             pip install ".[test]"
         fi
+	pip install "https://github.com/boutiques/boutiques/tarball/develop"
     elif [ "$CHECK_TYPE" = "test_dask" ]; then
         if [ "$INSTALL_TYPE" = "develop" ]; then
             pip install -e ".[dask]"
@@ -51,7 +54,7 @@ function travis_before_script {
 
 function travis_script {
     if [ "$CHECK_TYPE" = "test" ]; then
-        pytest -vs -n auto --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra
+        pytest -vs -n auto --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra/engine/tests/test_boutiques.py
     elif [ "$CHECK_TYPE" = "test_dask" ]; then
         pytest -vs -n auto --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules --dask pydra/engine
     elif [ "$CHECK_TYPE" = "style" ]; then
