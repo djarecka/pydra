@@ -35,12 +35,14 @@ function travis_before_script {
             pip install -e ".[test]"
         elif [ "$INSTALL_TYPE" = "sdist" ]; then
             pip install "$( ls dist/pydra*.tar.gz )[test]"
+
         elif [ "$INSTALL_TYPE" = "wheel" ]; then
             pip install "$( ls dist/pydra*.whl )[test]"
         else
             # extras don't seem possible with setup.py install, so switch to pip
             pip install ".[test]"
         fi
+	pip install "https://github.com/boutiques/boutiques/tarball/develop"
     elif [ "$CHECK_TYPE" = "test_dask" ]; then
         if [ "$INSTALL_TYPE" = "develop" ]; then
             pip install -e ".[dask]"
