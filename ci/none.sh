@@ -51,7 +51,7 @@ function travis_before_script {
 
 function travis_script {
     if [ "$CHECK_TYPE" = "test" ]; then
-        pytest -vs -n auto --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra
+        pytest -vs -n auto --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules pydra/engine/tests/test_boutiques.py
     elif [ "$CHECK_TYPE" = "test_dask" ]; then
         pytest -vs -n auto --cov pydra --cov-config .coveragerc --cov-report xml:cov.xml --doctest-modules --dask pydra/engine
     elif [ "$CHECK_TYPE" = "style" ]; then
