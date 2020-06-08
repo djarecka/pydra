@@ -30,6 +30,7 @@ function travis_before_script {
         # Install test dependencies using similar methods...
         # Extras are interpreted by pip, not setup.py, so develop becomes editable
         # and install just becomes pip
+	pip install "https://github.com/boutiques/boutiques/tarball/develop"
         if [ "$INSTALL_TYPE" = "develop" ]; then
             pip install -e ".[test]"
         elif [ "$INSTALL_TYPE" = "sdist" ]; then
