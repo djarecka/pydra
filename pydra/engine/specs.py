@@ -135,9 +135,11 @@ class BaseSpec:
 
             # checking if fields meet the xor and requires are
             if "xor" in mdata:
-                if [el for el in mdata["xor"] if el in names]:
+                # sometimes inputs xor includes the name of the specific field
+                xor_names = set(mdata["xor"]) - {fld.name}
+                if [el for el in xor_names if el in names]:
                     raise AttributeError(
-                        f"{fld.name} is mutually exclusive with {mdata['xor']}"
+                        f"{fld.name} is mutually exclusive with {xor_names}"
                     )
 
             if "requires" in mdata:
@@ -473,6 +475,8 @@ class ShellOutSpec:
         """ checking if all fields from the requires and template are set in the input
             if requires is a list of list, checking if at least one list has all elements set
         """
+        from .helpers import ensure_list
+
         if "requires" in fld.metadata:
             # if requires is a list of list it is treated as el[0] OR el[1] OR...
             if all([isinstance(el, list) for el in fld.metadata["requires"]]):
@@ -513,6 +517,7 @@ class ShellOutSpec:
                         break
                 elif isinstance(inp, tuple):  # (name, allowed values)
                     inp, allowed_val = inp
+                    allowed_val = ensure_list(allowed_val)
                     if not hasattr(inputs, inp):
                         raise Exception(
                             f"{inp} is not a valid input field, can't be used in requires"
