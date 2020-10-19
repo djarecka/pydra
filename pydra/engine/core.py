@@ -393,6 +393,7 @@ class TaskBase:
             submitter = Submitter()
 
         if submitter:
+            print("ALA")
             with submitter as sub:
                 res = sub(self)
         else:
@@ -405,6 +406,7 @@ class TaskBase:
 
     def _run(self, rerun=False, **kwargs):
         self.inputs = attr.evolve(self.inputs, **kwargs)
+        print("kult", self, self.inputs.a)
         self.inputs.check_fields_input_spec()
         checksum = self.checksum
         lockfile = self.cache_dir / (checksum + ".lock")
@@ -434,7 +436,9 @@ class TaskBase:
             self.hooks.pre_run_task(self)
             try:
                 self.audit.monitor()
+                print("kajtek", self, self.inputs.a)
                 self._run_task()
+                print("kaj po lojej", self, self.inputs.a, self.output_)
                 result.output = self._collect_outputs(output_dir=odir)
             except Exception as e:
                 record_error(self.output_dir, e)
@@ -930,6 +934,7 @@ class Workflow(TaskBase):
     async def _run(self, submitter=None, rerun=False, **kwargs):
         # self.inputs = dc.replace(self.inputs, **kwargs) don't need it?
         # output_spec needs to be set using set_output or at workflow initialization
+        print("fuj", self, self.state)
         if self.output_spec is None:
             raise ValueError(
                 "Workflow output cannot be None, use set_output to define output(s)"
@@ -985,6 +990,7 @@ class Workflow(TaskBase):
         if not submitter:
             raise Exception("Submitter should already be set.")
         # at this point Workflow is stateless so this should be fine
+        print("feja", self, self.state)
         await submitter._run_workflow(self, rerun=rerun)
 
     def set_output(self, connections):

@@ -45,6 +45,7 @@ class Submitter:
             runnable.cache_locations = cache_locations
         # creating all connections and calculating the checksum of the graph before running
         if is_workflow(runnable):
+            print("ble")
             # TODO: no prepare state ?
             for nd in runnable.graph.nodes:
                 runnable.create_connections(nd)
@@ -56,6 +57,7 @@ class Submitter:
         if is_workflow(runnable) and runnable.state is None:
             self.loop.run_until_complete(self.submit_workflow(runnable, rerun=rerun))
         else:
+            print("ble ble")
             self.loop.run_until_complete(self.submit(runnable, wait=True, rerun=rerun))
         if is_workflow(runnable):
             # resetting all connections with LazyFields
@@ -64,6 +66,7 @@ class Submitter:
 
     async def submit_workflow(self, workflow, rerun=False):
         """Distribute or initiate workflow execution."""
+        print("\n dddd", workflow)
         if is_workflow(workflow):
             if workflow.plugin and workflow.plugin != self.plugin:
                 # dj: this is not tested!!! TODO
@@ -76,6 +79,7 @@ class Submitter:
                 # dj: this is not tested!!! TODO
                 await self.worker.run_el(workflow, rerun=rerun)
             else:
+                print("dalej ind", ind)
                 await load_and_run_async(
                     task_pkl=wf_main_pkl, ind=ind, submitter=self, rerun=rerun
                 )
@@ -105,6 +109,7 @@ class Submitter:
         """
         futures = set()
         if runnable.state:
+            print("\n czesc", runnable, wait)
             runnable.state.prepare_states(runnable.inputs)
             runnable.state.prepare_inputs()
             logger.debug(
@@ -116,6 +121,7 @@ class Submitter:
                 job_tuple = (sidx, task_pkl, runnable)
                 if is_workflow(runnable):
                     # job has no state anymore
+                    print("czolem, tu jestem", runnable, sidx)
                     futures.add(self.submit_workflow(job_tuple, rerun=rerun))
                 else:
                     # tasks are submitted to worker for execution
@@ -125,9 +131,11 @@ class Submitter:
                 await self._run_workflow(runnable, rerun=rerun)
             else:
                 # submit task to worker
+                print("hej ho", runnable, runnable.state, wait)
                 futures.add(self.worker.run_el(runnable, rerun=rerun))
 
         if wait and futures:
+            print("czyzby?", runnable, runnable.state)
             # run coroutines concurrently and wait for execution
             # wait until all states complete or error
             await asyncio.gather(*futures)
@@ -152,6 +160,7 @@ class Submitter:
         """
         # creating a copy of the graph that will be modified
         # the copy contains new lists with original runnable objects
+        print("great", wf, wf.state)
         graph_copy = wf.graph.copy()
         # keep track of pending futures
         task_futures = set()
@@ -169,6 +178,7 @@ class Submitter:
                 if is_workflow(task) and not task.state:
                     await self.submit_workflow(task, rerun=rerun)
                 else:
+                    print("go go", task)
                     for fut in await self.submit(task, rerun=rerun):
                         task_futures.add(fut)
             task_futures = await self.worker.fetch_finished(task_futures)

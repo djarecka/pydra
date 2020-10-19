@@ -780,7 +780,9 @@ async def load_and_run_async(task_pkl, ind=None, submitter=None, rerun=False, **
     loading a task from a pickle file, settings proper input
     and running the workflow
     """
+    print("ej")
     task = load_task(task_pkl=task_pkl, ind=ind)
+    print("ej, ej", task, task.state)
     await task._run(submitter=submitter, rerun=rerun, **kwargs)
 
 
@@ -789,6 +791,7 @@ def load_task(task_pkl, ind=None):
     if isinstance(task_pkl, str):
         task_pkl = Path(task_pkl)
     task = cp.loads(task_pkl.read_bytes())
+    print("e tam", task, task.state)
     if ind is not None:
         _, inputs_dict = task.get_input_el(ind)
         task.inputs = attr.evolve(task.inputs, **inputs_dict)

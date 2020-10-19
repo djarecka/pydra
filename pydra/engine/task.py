@@ -193,6 +193,7 @@ class FunctionTask(TaskBase):
         self.output_spec = output_spec
 
     def _run_task(self):
+        print("lojej", self, self.inputs.a)
         inputs = attr.asdict(self.inputs)
         del inputs["_func"]
         self.output_ = None
