@@ -439,7 +439,7 @@ class TaskBase:
                 print("kajtek", self, self.inputs.a)
                 self._run_task()
                 print("kaj po lojej", self, self.inputs.a, self.output_)
-                result.output = self._collect_outputs(output_dir=odir)
+                result.output = 1  # self._collect_outputs(output_dir=odir)
             except Exception as e:
                 record_error(self.output_dir, e)
                 result.errored = True
@@ -968,22 +968,22 @@ class Workflow(TaskBase):
             odir.mkdir(parents=False, exist_ok=True if self.can_resume else False)
             self.audit.start_audit(odir=odir)
             result = Result(output=None, runtime=None, errored=False)
-            self.hooks.pre_run_task(self)
+            # self.hooks.pre_run_task(self)
             try:
                 self.audit.monitor()
                 await self._run_task(submitter, rerun=rerun)
-                result.output = self._collect_outputs()
+                result.output = 1  # self._collect_outputs()
             except Exception as e:
                 record_error(self.output_dir, e)
                 result.errored = True
                 self._errored = True
                 raise
-            finally:
-                self.hooks.post_run_task(self, result)
-                self.audit.finalize_audit(result=result)
-                save(odir, result=result, task=self)
-                os.chdir(cwd)
-        self.hooks.post_run(self, result)
+            # finally:
+            #     self.hooks.post_run_task(self, result)
+            #     self.audit.finalize_audit(result=result)
+            #     save(odir, result=result, task=self)
+            #     os.chdir(cwd)
+        # self.hooks.post_run(self, result)
         return result
 
     async def _run_task(self, submitter, rerun=False):
@@ -1046,6 +1046,7 @@ class Workflow(TaskBase):
         logger.info("Added %s to %s", self.output_spec, self)
 
     def _collect_outputs(self):
+        # breakpoint()
         error = False
         output_klass = make_klass(self.output_spec)
         output = output_klass(**{f.name: None for f in attr.fields(output_klass)})

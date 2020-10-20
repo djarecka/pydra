@@ -671,6 +671,7 @@ class LazyField:
         if self.attr_type == "input":
             return getattr(wf.inputs, self.field)
         elif self.attr_type == "output":
+            # breakpoint()
             node = getattr(wf, self.name)
             result = node.result(state_index=state_index)
             if isinstance(result, list):
@@ -694,8 +695,8 @@ class LazyField:
                             results_new.append(res.get_output_field(self.field))
                     return results_new
             else:
-                if result.errored:
-                    raise ValueError("Error from get_value")
+                # if result.errored:
+                #     raise ValueError("Error from get_value")
                 return result.get_output_field(self.field)
 
 
