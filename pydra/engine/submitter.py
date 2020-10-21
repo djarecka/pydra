@@ -57,7 +57,7 @@ class Submitter:
         if is_workflow(runnable) and runnable.state is None:
             self.loop.run_until_complete(self.submit_workflow(runnable, rerun=rerun))
         else:
-            print("ble ble")
+            print("ble ble", runnable, runnable.state)
             self.loop.run_until_complete(self.submit(runnable, wait=True, rerun=rerun))
         if is_workflow(runnable):
             # resetting all connections with LazyFields
@@ -132,7 +132,9 @@ class Submitter:
             else:
                 # submit task to worker
                 print("hej ho", runnable, runnable.state, wait)
-                futures.add(self.worker.run_el(runnable, rerun=rerun))
+                # futures.add(self.worker.run_el(runnable, rerun=rerun))
+                # without this line the memory used (rss) is significantly smaller
+                futures.add(self.tmp_print_subm())
 
         if wait and futures:
             print("czyzby?", runnable, runnable.state)
@@ -142,6 +144,9 @@ class Submitter:
             return
         # pass along futures to be awaited independently
         return futures
+
+    async def tmp_print_subm(self):
+        print("hej, just printing")
 
     async def _run_workflow(self, wf, rerun=False):
         """

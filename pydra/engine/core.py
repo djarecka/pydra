@@ -405,8 +405,9 @@ class TaskBase:
         return res
 
     def _run(self, rerun=False, **kwargs):
+        print("kult", self, self.inputs.a, id(self))
         self.inputs = attr.evolve(self.inputs, **kwargs)
-        print("kult", self, self.inputs.a)
+        print("kult", self, self.inputs.a, id(self))
         self.inputs.check_fields_input_spec()
         checksum = self.checksum
         lockfile = self.cache_dir / (checksum + ".lock")

@@ -191,7 +191,7 @@ class ConcurrentFuturesWorker(Worker):
 
     def run_el(self, runnable, rerun=False, **kwargs):
         """Run a task."""
-        print("i can do it", runnable, runnable.inputs.a)
+        print("i can run it", runnable, runnable.inputs.a)
         assert self.loop, "No event loop available to submit tasks"
         return self.exec_as_coro(runnable, rerun=rerun)
 
