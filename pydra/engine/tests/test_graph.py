@@ -515,3 +515,33 @@ def test_dotfile_3(tmpdir):
     if DOT_FLAG:
         formatted_dot = graph.export_graph(dotfile)
         assert formatted_dot.exists()
+
+
+def test_a(tmpdir):
+    from pathlib import Path
+
+    batchscript = Path(tmpdir) / f"batchscript.sh"
+    task_pkl = "my_task"
+    ind = 0
+    rerun = True
+    python_string = (
+        f"""'from pydra.engine.helpers import load_and_run; """
+        f"""load_and_run(task_pkl="{str(task_pkl)}", ind={ind}, rerun={rerun}) '"""
+    )
+    # python_string = (
+    #     f"""'from pydra.engine.helpers import load_and_run; """
+    #     f"""load_and_run(task_pkl="{str(task_pkl)}", ind={ind}, rerun={rerun}) '"""
+    # )
+
+    bcmd = "\n".join(
+        (
+            f"#!bash",
+            f"#SBATCH --output='slurm-%j.out'",
+            f"python -c " + python_string,
+        )
+    )
+    with batchscript.open("wt") as fp:
+        fp.writelines(bcmd)
+
+    print("PATH", tmpdir)
+    ala = "fkkk " "llldldkl"
