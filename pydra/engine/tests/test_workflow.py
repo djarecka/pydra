@@ -32,6 +32,8 @@ from ..core import Workflow
 from ... import mark
 from ..specs import SpecInfo, BaseSpec, ShellSpec
 
+print("test")
+
 
 def test_wf_no_input_spec():
     with pytest.raises(ValueError, match="Empty input_spec"):
