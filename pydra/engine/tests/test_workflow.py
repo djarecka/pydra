@@ -4455,13 +4455,15 @@ def exporting_graphs(wf, name):
     print("\n pdf of the detailed graph in: ", formatted_dot[0])
 
 
-def test_graph_1(tmpdir):
+@pytest.mark.parametrize("splitter", [None, "x"])
+def test_graph_1(tmpdir, splitter):
     """creating a set of graphs, wf with two nodes"""
     wf = Workflow(name="wf", input_spec=["x", "y"], cache_dir=tmpdir)
     wf.add(multiply(name="mult_1", x=wf.lzin.x, y=wf.lzin.y))
     wf.add(multiply(name="mult_2", x=wf.lzin.x, y=wf.lzin.x))
     wf.add(add2(name="add2", x=wf.mult_1.lzout.out))
     wf.set_output([("out", wf.add2.lzout.out)])
+    wf.split(splitter)
 
     # simple graph
     dotfile_s = wf.create_dotfile()
