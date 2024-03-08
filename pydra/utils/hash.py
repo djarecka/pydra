@@ -7,7 +7,7 @@ import typing as ty
 from pathlib import Path
 from collections.abc import Mapping
 from functools import singledispatch
-from hashlib import blake2b, blake2s
+from hashlib import blake2b
 import logging
 from typing import (
     Dict,
@@ -69,7 +69,16 @@ def location_converter(path: ty.Union[Path, str, None]) -> Path:
 @attrs.define
 class PersistentCache:
     """Persistent cache in which to store computationally expensive hashes between nodes
-    and workflow/task runs
+    and workflow/task runs. It does this in via the `get_or_calculate_hash` method, which
+    takes a locally unique key (e.g. file-system path + mtime) and a function to
+    calculate the hash if it isn't present in the persistent store.
+
+    The locally unique key is hashed (cheaply) using hashlib cryptography and this
+    "local hash" is use to name the entry of the (potentially expensive) hash of the
+    object itself (e.g. the contents of a file). This entry is saved as a text file
+    within a user-specific cache directory (see `platformdirs.user_cache_dir`), with
+    the name of the file being the "local hash" of the key and the contents of the
+    file being the "globally unique hash" of the object itself.
 
     Parameters
     ----------
@@ -136,7 +145,7 @@ class PersistentCache:
             return self._hashes[key]
         except KeyError:
             pass
-        key_path = self.location / blake2s(str(key).encode()).hexdigest()
+        key_path = self.location / blake2b(str(key).encode()).hexdigest()
         with SoftFileLock(key_path.with_suffix(".lock")):
             if key_path.exists():
                 return Hash(key_path.read_bytes())
@@ -166,6 +175,17 @@ class PersistentCache:
 
 @attrs.define
 class Cache:
+    """Cache for hashing objects, used to avoid infinite recursion caused by circular
+    references between objects, and to store hashes of objects that have already been
+    hashed to avoid recomputation.
+
+    This concept is extended to persistent caching of hashes for certain object types,
+    for which calculating the hash is a potentially expensive operation (e.g.
+    File/Directory types). For these classes the `bytes_repr` override function yields a
+    "locally unique cache key" (e.g. file-system path + mtime) as the first item of its
+    iterator.
+    """
+
     persistent: ty.Optional[PersistentCache] = attrs.field(
         default=None,
         converter=PersistentCache.from_path,  # type: ignore[misc]
@@ -192,7 +212,9 @@ def hash_function(obj, **kwargs):
 
 
 def hash_object(
-    obj: object, persistent_cache: ty.Union[PersistentCache, Path, None] = None
+    obj: object,
+    cache: ty.Optional[Cache] = None,
+    persistent_cache: ty.Union[PersistentCache, Path, None] = None,
 ) -> Hash:
     """Hash an object
 
@@ -202,8 +224,10 @@ def hash_object(
     Base Python types are implemented, including recursive lists and
     dicts. Custom types can be registered with :func:`register_serializer`.
     """
+    if cache is None:
+        cache = Cache(persistent=persistent_cache)
     try:
-        return hash_single(obj, Cache(persistent=persistent_cache))
+        return hash_single(obj, cache)
     except Exception as e:
         raise UnhashableError(f"Cannot hash object {obj!r} due to '{e}'") from e
 
@@ -276,6 +300,22 @@ class HasBytesRepr(Protocol):
 
 @singledispatch
 def bytes_repr(obj: object, cache: Cache) -> Iterator[bytes]:
+    """Default implementation of hashing for generic objects. Single dispatch is used
+    to provide hooks for class-specific implementations
+
+    Parameters
+    ----------
+    obj: object
+        the object to hash
+    cache : Cache
+        a dictionary object used to store a cache of previously cached objects to
+        handle circular object references
+
+    Yields
+    -------
+    bytes
+        unique representation of the object in a series of bytes
+    """
     cls = obj.__class__
     yield f"{cls.__module__}.{cls.__name__}:{{".encode()
     dct: Dict[str, ty.Any]
@@ -504,39 +544,3 @@ if HAVE_NUMPY:
 
 
 NUMPY_CHUNK_LEN = 8192
-
-
-# class MtimeCachingHash:
-#     """Hashing object that stores a cache of hash values for PathLikes
-
-#     The cache only stores values for PathLikes pointing to existing files,
-#     and the mtime is checked to validate the cache. If the mtime differs,
-#     the old hash is discarded and a new mtime-tagged hash is stored.
-
-#     The cache can grow without bound; we may want to consider using an LRU
-#     cache.
-#     """
-
-#     def __init__(self) -> None:
-#         self.cache: ty.Dict[os.PathLike, ty.Tuple[float, Hash]] = {}
-
-#     def __call__(self, obj: object) -> Hash:
-#         if isinstance(obj, os.PathLike):
-#             path = Path(obj)
-#             try:
-#                 stat_res = path.stat()
-#                 mode, mtime = stat_res.st_mode, stat_res.st_mtime
-#             except FileNotFoundError:
-#                 # Only attempt to cache existing files
-#                 pass
-#             else:
-#                 if stat.S_ISREG(mode) and obj in self.cache:
-#                     # Cache (and hash) the actual object, as different pathlikes will have
-#                     # different serializations
-#                     save_mtime, save_hash = self.cache[obj]
-#                     if mtime == save_mtime:
-#                         return save_hash
-#                     new_hash = hash_object(obj)
-#                     self.cache[obj] = (mtime, new_hash)
-#                     return new_hash
-#         return hash_object(obj)
